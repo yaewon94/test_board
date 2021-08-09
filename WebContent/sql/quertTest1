@@ -1,0 +1,55 @@
+-- 사원
+SELECT * FROM EMP;
+-- 부서
+SELECT * FROM DEPT;
+-- 등급
+SELECT * FROM SALGRADE;
+
+1.위치 상관 없이 이름 중에 A가 들어있는 사람을 찾는 쿼리문
+  SELECT * FROM EMP WHERE 이름 LIKE ‘%A%’
+  ;
+  
+2.이름이 N으로 끝나는 사람을 찾는 쿼리문
+  SELECT * FROM EMP WHERE 이름 LIKE ‘%N’
+  ;
+  
+3.이름의 두 번째 글자가 A인 사원을 찾는 쿼리문
+  SELECT * FROM EMP WHERE 이름 LIKE ‘_A%’
+  ;
+  
+4.이름의 세 번째 글자가 A인 사원을 찾는 쿼리문
+  SELECT * FROM EMP WHERE 이름 LIKE ‘_ _A%’
+  ;
+  
+5.이름에 A를 포함하지 않는 사람만 검색하는 쿼리문
+  SELECT * FROM EMP WHERE 이름 NOT LIKE ‘%A%’
+  ;
+  
+6.이름이 SCOTT인 사람의 부서명을 출력해 보는 쿼리문
+  SELECT DEPT.부서명 
+	  FROM EMP
+	  JOIN DEPT ON EMP.부서번호 = DEPT.부서번호 
+	  WHERE EMP.이름=‘SCOTT’
+    ;
+    
+7.각 사원의 급여가 몇 등급인지 살펴보는 쿼리문 (비등가조인)
+  SELECT SALGRADE.등급
+	  FROM EMP, SALGRADE
+	  WHERE EMP.급여 
+      BETWEEN SALGRADE.최소급여 AND SALGRADE.최대급여
+    ;
+    
+8.SCOTT의 급여와 동일하거나 급여를 더 많이 받는 사원과 급여를 출력하는 쿼리문
+  SELECT 이름, 급여 
+    FROM EMP 
+	  WHERE 급여>= (SELECT 급여 
+                    FROM EMP 
+                    WHERE 이름=‘SCOTT’ )
+ ;
+ 
+9.CLARK와 부서가 다르며 BLAKE보다 먼저 입사한 사람들을 출력하는 쿼리문
+  SELECT * FROM EMP, DEPT
+	  WHERE EMP.부서번호 = DEPT.부서번호
+	    AND EMP.부서번호 != (SELECT 부서번호 FROM EMP WHERE 이름=“CLARK”)
+	    AND EMP.입사날짜 < (SELECT 입사날짜 FROM EMP WHERE 이름=“BLAKE”)
+  ;
