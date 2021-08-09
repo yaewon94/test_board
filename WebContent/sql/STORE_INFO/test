@@ -1,0 +1,68 @@
+1.매출월 2021년 1~7월 까지의 모든 점포 조회
+  SELECT 
+      STORE_CD
+    , STORE_NM
+    , SALES_DATE 
+   FROM STORE_INFO 
+   WHERE SALES_DATE 
+    BETWEEN '202101' AND '202107'
+  ;
+  
+2.점포별 매출의 합과 평균매출 구하기
+  SELECT 
+      STORE_CD
+    , STORE_NM
+    , SUM(SALES) AS 매출
+    , ROUND(AVG(SALES)) AS 평균매출
+   FROM STORE_INFO 
+   GROUP BY 
+      STORE_CD
+    , STORE_NM
+  ;
+  
+3.모든 점포의 매출의 합과 평균매출 구하기
+  SELECT 
+      SUM(SALES)
+    , ROUND(AVG(SALES)) 
+  FROM STORE_INFO
+  ;
+  
+4.월 매출 등급 매기기
+ SELECT 
+    STORE_CD
+  , STORE_NM
+  , SALES
+  , CASE 
+      WHEN SALES < 4000000 THEN '하' 
+      WHEN SALES < 5000000 THEN '중' 
+      ELSE '상'
+    END AS 매출등급 
+   FROM STORE_INFO
+ ;
+  
+5.종합
+  SELECT
+      DECODE(GROUPING(STORE_CD), 1, '----', STORE_CD) 점포코드
+    , DECODE(GROUPING(STORE_NM), 1, '----', STORE_NM) 점포명
+    , DECODE(GROUPING(MANAGER), 1, '----', MANAGER) 점장
+    , CASE 
+        WHEN GROUPING(SALES_DATE) = 1 AND GROUPING(MANAGER) = 1 THEN '합계' 
+        WHEN GROUPING(SALES_DATE) = 1 THEN '소계' 
+        ELSE SALES_DATE 
+      END AS 매출월
+    , CASE 
+        WHEN GROUPING(SALES_DATE) = 1 THEN '----' 
+        WHEN SUM(SALES) < 4000000 THEN '하' 
+        WHEN SUM(SALES) < 5000000 THEN '중' 
+        ELSE '상' 
+      END AS 매출등급
+    , SUM(SALES) AS 매출
+    , ROUND(AVG(SALES)) AS 평균매출 
+   FROM STORE_INFO 
+   WHERE SALES_DATE 
+    BETWEEN '202101' AND '202107' 
+   GROUP BY ROLLUP(
+      (STORE_CD, STORE_NM, MANAGER)
+    , SALES_DATE
+    )
+ ;
