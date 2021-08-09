@@ -1,0 +1,44 @@
+create or replace PROCEDURE P_STORE_INFO
+(
+   P_CODE IN VARCHAR2,          --점포코드PK
+   P_STROE_NAME IN VARCHAR2,    --점포명
+   P_MANAGER IN VARCHAR2        --점장명
+)
+IS
+BEGIN
+DECLARE
+      V_CNT NUMBER(2) := 0;    --초기값
+BEGIN
+    LOOP
+    EXIT WHEN V_CNT = 12;       --조건 (V_CNT가 12이되면 LOOP끝)
+      INSERT INTO STORE_INFO(
+                              STORE_CD
+                            , STORE_NM
+                            , SALES_DATE
+                            , MANAGER
+                            , SALES
+                            ) 
+                            VALUES
+                            ( 
+                              P_CODE
+                            , P_STROE_NAME
+                            , (SELECT TO_CHAR(TO_DATE('202101'+V_CNT, 'YYYYMM'), 'YYYYMM') FROM DUAL)
+                            , P_MANAGER 
+                            , (SELECT TRUNC(DBMS_RANDOM.VALUE(3000000, 6000000)) AS RANDOM_NUM FROM DUAL)
+                            );
+      V_CNT := V_CNT + 1;       --증가치 (1씩증가)
+    END LOOP;
+END;
+COMMIT;
+
+END P_STORE_INFO;
+;
+============================================================================================================================
+예)
+EXEC P_STORE_INFO('1111', '신도림점', '백종원');
+EXEC P_STORE_INFO('2222', '신림점', '오리아나');
+EXEC P_STORE_INFO('3333', '강남역', '가렌');
+EXEC P_STORE_INFO('4444', '수원역점', '르블랑');
+EXEC P_STORE_INFO('5555', '서울역점', '갈리오');
+EXEC P_STORE_INFO('6666', '건대역', '아리');
+EXEC P_STORE_INFO('7777', '홍대역점', '이즈리얼');  
