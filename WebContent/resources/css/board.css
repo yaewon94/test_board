@@ -1,0 +1,37 @@
+@charset "UTF-8";
+
+ul{
+	list-style:none;
+}
+/*
+	레이아웃 : 메뉴
+*/
+#layout-menu{
+	padding-left:5%; padding-top:2%;
+}
+
+.btn-menu{
+	color:blue;
+}
+
+/*
+	레이아웃 : body
+*/
+#layout-body{
+	margin-left:5%; margin-right:5%;
+}
+
+/*
+	home.jsp
+*/
+#img-mainLogo{
+	padding-top:3%;
+}
+
+/*
+	board/detail.jsp
+*/
+#board-detail li span{
+	font-weight:bold;
+	line-height:40px;
+}
