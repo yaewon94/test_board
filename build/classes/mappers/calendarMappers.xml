@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+	<mapper namespace="calendarMapper">
+		<!-- 해당 년월의 스케줄이 있는 날짜들 가져오기 -->
+		<select id="selectDayList" resultType="Integer" parameterType="map">
+			SELECT 
+				DISTINCT CALDAY 
+			FROM CALENDAR 
+			WHERE USE_YN='Y' 
+				AND CALYEAR = #{calYear} 
+				AND CALMONTH = #{calMonth}
+			ORDER BY TO_NUMBER(CALDAY) ASC
+		</select>
+		<!-- 해당 날짜의 스케줄 리스트 가져오기 -->
+		<select id="selectScheduleList" resultType="calendarVo" parameterType="calendarVo">
+			SELECT CALNO
+				, CALTIME
+				, CALCONTENTS
+				, CALREQ 
+			FROM CALENDAR 
+			WHERE USE_YN='Y' 
+				AND CALYEAR = #{calYear} 
+				AND CALMONTH = #{calMonth} 
+				AND CALDAY = #{calDay}
+		</select>
+		<!-- 스케줄 등록 -->
+		<update id="insertSchedule" parameterType="calendarVo">
+			MERGE INTO CALENDAR 
+				USING DUAL 
+				ON (CALNO = #{calNo}) 
+			WHEN MATCHED THEN 
+				UPDATE SET 
+					  CALTIME = #{calTime}
+			 		, CALREQ = #{calReq}
+			 		, CALCONTENTS = #{calContents} 
+			WHEN NOT MATCHED THEN
+				INSERT 
+					( CALNO
+					, CALYEAR
+					, CALMONTH
+					, CALDAY
+					, CALTIME
+					, CALREQ
+					, CALDATE
+					, CALCONTENTS) 
+				VALUES 
+					( CALENDAR_SEQ.nextval
+					, #{calYear, jdbcType=VARCHAR}
+					, #{calMonth, jdbcType=VARCHAR}
+					, #{calDay, jdbcType=VARCHAR}
+					, #{calTime, jdbcType=VARCHAR}
+					, #{calReq, jdbcType=VARCHAR}
+					, TO_DATE(#{calDate, jdbcType=DATE},'YYYYMMDDHH24MI') 
+					, #{calContents, jdbcType=VARCHAR} )
+		</update>
+		<!-- 스케즐 삭제 -->
+		<delete id="deleteSchedule" parameterType="Integer">
+			UPDATE CALENDAR 
+				SET USE_YN = 'N' 
+				WHERE CALNO = #{calNo}
+		</delete>
+	</mapper>
