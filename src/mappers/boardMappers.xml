@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+	<mapper namespace="boardMapper">
+		<!-- 게시물 등록 및 수정 -->
+		<update id="updateBoard" parameterType="boardVo">
+			MERGE INTO BOARD 
+				USING DUAL 
+				ON (BOARD_NUM = #{board_num}) 
+			WHEN MATCHED THEN 
+				UPDATE SET 
+					  BOARD_TITLE = #{board_title}
+			 		, BOARD_WRITER = #{board_writer}
+			 		, BOARD_CONTENT = #{board_content} 
+			WHEN NOT MATCHED THEN
+				INSERT 
+					( BOARD_NUM
+					, BOARD_TITLE
+					, BOARD_WRITER
+					, BOARD_CONTENT) 
+				VALUES 
+					( BOARD_SEQ.nextval
+					, #{board_title, jdbcType=VARCHAR}
+					, #{board_writer, jdbcType=VARCHAR}
+					, #{board_content, jdbcType=CLOB})
+		</update>
+		<!-- 게시물 리스트 가져오기 -->
+		<select id="selectBoardList" resultType="boardVo">
+			SELECT 
+			      	BOARD_NUM
+			      , BOARD_TITLE
+			      , BOARD_WRITER
+			      , BOARD_CONTENT
+			      , TO_CHAR(BOARD_DATE,'YYYY-MM-DD HH24:MI:SS') AS BOARD_DATE
+			  FROM BOARD
+		     ORDER BY BOARD_DATE DESC
+		</select>
+		<!-- 게시물 상세 -->
+		<select id="selectBoard" resultType="boardVo" parameterType="integer">
+			SELECT * 
+			 FROM BOARD 
+			 WHERE BOARD_NUM = #{board_num}
+		</select>
+		<!-- 게시물 삭제 -->
+		<delete id="deleteBoard" parameterType="integer">
+			DELETE 
+			 FROM BOARD 
+			 WHERE BOARD_NUM = #{board_num}
+		</delete>
+	</mapper>
